@@ -12,6 +12,11 @@ type Config struct {
 		AccessKey string
 		SecretKey string
 	}
+
+	Locations struct {
+		Source      []string
+		Destination []string
+	}
 }
 
 //Get the configurations from ~/.s3upload.conf
