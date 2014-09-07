@@ -24,6 +24,14 @@ func main() {
 
 	count := len(cfg.Locations.Source)
 
+	//loop through all the source paths to check if they exist before processing
+	for i := 0; i < count; i++ {
+		if _, err := os.Stat(cfg.Locations.Source[i]); os.IsNotExist(err) {
+			fmt.Println(cfg.Locations.Source[i] + " does not exist.")
+			os.Exit(1)
+		}
+	}
+
 	for i := 0; i < count; i++ {
 		src := cfg.Locations.Source[i]
 		locationPtr = i
