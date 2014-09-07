@@ -44,21 +44,25 @@ func uploadFile(file, name string) {
 	s3util.DefaultConfig.AccessKey = cfg.Auth.AccessKey
 	s3util.DefaultConfig.SecretKey = cfg.Auth.SecretKey
 
+	fmt.Print(file)
+
 	r, rerr := os.Open(file)
 	if rerr != nil {
-		fmt.Println(rerr)
-		os.Exit(2)
+		fmt.Println(rerr.Error())
+		return
 	}
 	defer r.Close()
 
 	w, werr := s3util.Create(cfg.Locations.Destination[locationPtr]+name, nil, nil)
 	if werr != nil {
-		fmt.Println(werr)
-		os.Exit(3)
+		fmt.Println(werr.Error())
+		return
 	}
 	defer w.Close()
 
 	io.Copy(w, r)
+
+	fmt.Println("\t\tDone")
 }
 
 func checkFile(file, dest string) bool {
