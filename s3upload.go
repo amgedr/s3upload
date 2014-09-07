@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var (
@@ -22,6 +23,7 @@ func main() {
 	}
 
 	count := len(cfg.Locations.Source)
+
 	for i := 0; i < count; i++ {
 		src := cfg.Locations.Source[i]
 		locationPtr = i
@@ -32,37 +34,39 @@ func main() {
 
 func upload(path string, f os.FileInfo, err error) error {
 	if !f.IsDir() { //if path is a file
-		uploadFile(path, f.Name())
-	} else { //else its a directory
-		//TODO: create the directory
+		uploadFile(path)
 	}
 
 	return nil
 }
 
-func uploadFile(file, name string) {
+func uploadFile(path string) {
 	s3util.DefaultConfig.AccessKey = cfg.Auth.AccessKey
 	s3util.DefaultConfig.SecretKey = cfg.Auth.SecretKey
 
-	fmt.Print(file)
+	dest := strings.Replace(path, cfg.Locations.Source[locationPtr], "", 1)
+	dest = strings.Trim(dest, "\\")             //in case its a Windows path
+	dest = strings.Replace(dest, "\\", "/", -1) //in case its a Windows path
 
-	r, rerr := os.Open(file)
+	fmt.Print(path)
+
+	r, rerr := os.Open(path)
 	if rerr != nil {
-		fmt.Println(rerr.Error())
+		fmt.Println("....." + rerr.Error())
 		return
 	}
 	defer r.Close()
 
-	w, werr := s3util.Create(cfg.Locations.Destination[locationPtr]+name, nil, nil)
+	w, werr := s3util.Create(cfg.Locations.Destination[locationPtr]+dest, nil, nil)
 	if werr != nil {
-		fmt.Println(werr.Error())
+		fmt.Println("....." + werr.Error())
 		return
 	}
 	defer w.Close()
 
 	io.Copy(w, r)
 
-	fmt.Println("\t\tDone")
+	fmt.Println(".....Done")
 }
 
 func checkFile(file, dest string) bool {
