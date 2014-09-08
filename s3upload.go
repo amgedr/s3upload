@@ -30,6 +30,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	for i := 0; i < len(cfg.Locations.Destination); i++ {
+		//remove trailing slashes to unify the way paths are combined
+		//ie: wether they are entered in the config file or not it still works
+		cfg.Locations.Destination[i] = strings.Trim(cfg.Locations.Destination[i], "/")
+	}
+
 	//loop through all the source paths to check if they exist before processing
 	for _, src := range cfg.Locations.Source {
 		if _, err := os.Stat(src); os.IsNotExist(err) {
@@ -54,10 +60,10 @@ func upload(path string, f os.FileInfo, err error) error {
 
 func uploadFile(path string) {
 	dest := strings.Replace(path, cfg.Locations.Source[locationPtr], "", 1)
-	dest = strings.Trim(dest, "\\")             //in case its a Windows path
+	dest = strings.Trim(dest, "\\/")            //remove *nix and Windows dir separators
 	dest = strings.Replace(dest, "\\", "/", -1) //in case its a Windows path
 
-	fmt.Print(path)
+	fmt.Print(dest)
 
 	r, rerr := os.Open(path)
 	if rerr != nil {
@@ -66,7 +72,7 @@ func uploadFile(path string) {
 	}
 	defer r.Close()
 
-	w, werr := s3util.Create(cfg.Locations.Destination[locationPtr]+dest, nil, nil)
+	w, werr := s3util.Create(cfg.Locations.Destination[locationPtr]+"/"+dest, nil, nil)
 	if werr != nil {
 		fmt.Println("....." + werr.Error())
 		return
