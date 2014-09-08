@@ -23,6 +23,8 @@ func main() {
 	}
 
 	count := len(cfg.Locations.Source)
+	s3util.DefaultConfig.AccessKey = cfg.Auth.AccessKey
+	s3util.DefaultConfig.SecretKey = cfg.Auth.SecretKey
 
 	//loop through all the source paths to check if they exist before processing
 	for i := 0; i < count; i++ {
@@ -49,9 +51,6 @@ func upload(path string, f os.FileInfo, err error) error {
 }
 
 func uploadFile(path string) {
-	s3util.DefaultConfig.AccessKey = cfg.Auth.AccessKey
-	s3util.DefaultConfig.SecretKey = cfg.Auth.SecretKey
-
 	dest := strings.Replace(path, cfg.Locations.Source[locationPtr], "", 1)
 	dest = strings.Trim(dest, "\\")             //in case its a Windows path
 	dest = strings.Replace(dest, "\\", "/", -1) //in case its a Windows path
@@ -78,9 +77,6 @@ func uploadFile(path string) {
 }
 
 func checkFile(file, dest string) bool {
-	s3util.DefaultConfig.AccessKey = cfg.Auth.AccessKey
-	s3util.DefaultConfig.SecretKey = cfg.Auth.SecretKey
-
 	r, err := s3util.Open(dest+file, nil)
 	if err != nil {
 		return false
