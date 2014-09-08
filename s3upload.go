@@ -23,8 +23,14 @@ func main() {
 	}
 
 	count := len(cfg.Locations.Source)
-	s3util.DefaultConfig.AccessKey = cfg.Auth.AccessKey
-	s3util.DefaultConfig.SecretKey = cfg.Auth.SecretKey
+
+	if cfg.Auth.AccessKey != "" && cfg.Auth.SecretKey != "" {
+		s3util.DefaultConfig.AccessKey = cfg.Auth.AccessKey
+		s3util.DefaultConfig.SecretKey = cfg.Auth.SecretKey
+	} else {
+		fmt.Println("Error: AccessKey and/or SecretKey not set.")
+		os.Exit(1)
+	}
 
 	//loop through all the source paths to check if they exist before processing
 	for i := 0; i < count; i++ {
