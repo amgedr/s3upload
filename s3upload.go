@@ -22,8 +22,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	count := len(cfg.Locations.Source)
-
 	if cfg.Auth.AccessKey != "" && cfg.Auth.SecretKey != "" {
 		s3util.DefaultConfig.AccessKey = cfg.Auth.AccessKey
 		s3util.DefaultConfig.SecretKey = cfg.Auth.SecretKey
@@ -33,17 +31,15 @@ func main() {
 	}
 
 	//loop through all the source paths to check if they exist before processing
-	for i := 0; i < count; i++ {
-		if _, err := os.Stat(cfg.Locations.Source[i]); os.IsNotExist(err) {
-			fmt.Println(cfg.Locations.Source[i] + " does not exist.")
+	for _, src := range cfg.Locations.Source {
+		if _, err := os.Stat(src); os.IsNotExist(err) {
+			fmt.Println(src + " does not exist.")
 			os.Exit(1)
 		}
 	}
 
-	for i := 0; i < count; i++ {
-		src := cfg.Locations.Source[i]
+	for i, src := range cfg.Locations.Source {
 		locationPtr = i
-
 		_ = filepath.Walk(src, upload)
 	}
 }
