@@ -7,11 +7,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 var (
 	cfg         Config
 	locationPtr int //contains the index of the current location being processed
+	waiter      sync.WaitGroup
 )
 
 func main() {
@@ -48,11 +50,14 @@ func main() {
 		locationPtr = i
 		_ = filepath.Walk(src, upload)
 	}
+
+	waiter.Wait()
 }
 
 func upload(path string, f os.FileInfo, err error) error {
 	if !f.IsDir() { //if path is a file
-		uploadFile(path)
+		waiter.Add(1)
+		go uploadFile(path)
 	}
 
 	return nil
@@ -63,25 +68,24 @@ func uploadFile(path string) {
 	dest = strings.Trim(dest, "\\/")            //remove *nix and Windows dir separators
 	dest = strings.Replace(dest, "\\", "/", -1) //in case its a Windows path
 
-	fmt.Print(dest)
+	defer waiter.Done()
 
-	r, rerr := os.Open(path)
-	if rerr != nil {
-		fmt.Println("....." + rerr.Error())
+	r, err := os.Open(path)
+	if err != nil {
+		fmt.Printf("%s...%s", dest, err.Error())
 		return
 	}
 	defer r.Close()
 
-	w, werr := s3util.Create(cfg.Locations.Destination[locationPtr]+"/"+dest, nil, nil)
-	if werr != nil {
-		fmt.Println("....." + werr.Error())
+	w, err := s3util.Create(cfg.Locations.Destination[locationPtr]+"/"+dest, nil, nil)
+	if err != nil {
+		fmt.Printf("%s...%s\n", dest, err.Error())
 		return
 	}
 	defer w.Close()
 
 	io.Copy(w, r)
-
-	fmt.Println(".....Done")
+	fmt.Printf("%s.....Done\n", dest)
 }
 
 func checkFile(file, dest string) bool {
