@@ -14,6 +14,10 @@ type Config struct {
 		SecretKey string
 	}
 
+	Setup struct {
+		Overwrite bool
+	}
+
 	Locations struct {
 		Source      []string
 		Destination []string
@@ -48,6 +52,10 @@ func getConfigs() Config {
 var newConfig = `[Auth]
 AccessKey="your_amazon_accesskey"  # Get from Amazon
 SecretKey="your_amazon_secretkey"  # Get from Amazon
+
+[Setup]
+#Setting this option to true may incur additional cost
+overwrite=false
 
 [Locations]
 source=""       # local directory to upload

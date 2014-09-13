@@ -70,10 +70,12 @@ func uploadFile(path string) {
 
 	defer waiter.Done()
 
-	//if file exists do not upload again
-	if _, e := s3util.Open(cfg.Locations.Destination[locationPtr]+"/"+dest, nil); e == nil {
-		fmt.Printf("%s...Already exists.\n", dest)
-		return
+	if !cfg.Setup.Overwrite {
+		//if file exists do not upload again
+		if _, e := s3util.Open(cfg.Locations.Destination[locationPtr]+"/"+dest, nil); e == nil {
+			fmt.Printf("%s...Already exists.\n", dest)
+			return
+		}
 	}
 
 	r, err := os.Open(path)
