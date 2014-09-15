@@ -15,6 +15,7 @@ type Config struct {
 	}
 
 	Setup struct {
+		Log       string
 		Overwrite bool
 	}
 
@@ -28,8 +29,7 @@ type Config struct {
 func getConfigs() Config {
 	usr, err := user.Current()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		logger.Fatalln(err.Error())
 	}
 
 	file := usr.HomeDir + string(os.PathSeparator) + ".s3upload.conf"
@@ -38,8 +38,7 @@ func getConfigs() Config {
 	if cfg_err != nil {
 		err := ioutil.WriteFile(file, []byte(newConfig), 644)
 		if err != nil {
-			fmt.Println("Error: Could not create .s3upload.conf in the current user's home folder.",
-				" Please check the permission and run again.")
+			logger.Println("Could not create .s3upload.conf in the current user's home folder.")
 		} else {
 			fmt.Println(".s3upload.conf was successfully created in the current user's home folder.",
 				" Please edit it and enter correct settings.")
