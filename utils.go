@@ -4,6 +4,7 @@ import (
 	"code.google.com/p/gcfg" //Ref: http://code.google.com/p/gcfg/
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/user"
 )
@@ -33,16 +34,23 @@ func getConfigs() Config {
 	}
 
 	file := usr.HomeDir + string(os.PathSeparator) + ".s3upload.conf"
+
+	//if the file does not exist create it
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		err := ioutil.WriteFile(file, []byte(newConfig), 644)
+		if err != nil {
+			//logger is not initialized yet so use Go's default log
+			log.Fatalln("Could not create .s3upload.conf in the current user's home folder.")
+		} else {
+			log.Fatalln(".s3upload.conf was successfully created in the current user's home folder.",
+				" Please edit it and enter correct settings.")
+		}
+	}
+
 	var cfg Config
 	cfg_err := gcfg.ReadFileInto(&cfg, file)
 	if cfg_err != nil {
-		err := ioutil.WriteFile(file, []byte(newConfig), 644)
-		if err != nil {
-			logger.Println("Could not create .s3upload.conf in the current user's home folder.")
-		} else {
-			fmt.Println(".s3upload.conf was successfully created in the current user's home folder.",
-				" Please edit it and enter correct settings.")
-		}
+		fmt.Println(cfg_err.Error())
 		os.Exit(1)
 	}
 	return cfg
