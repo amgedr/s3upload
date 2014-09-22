@@ -72,8 +72,4 @@ func main() {
 
 	infoLog.Printf("Successful: %d, Existed: %d, Failed: %d\n\n",
 		summary.Success, summary.Exists, summary.Fails)
-
-	////use fmt instead because logger will display the file name and line number
-	//fmt.Fprintln(logfile, totals)
-	//fmt.Printf(totals)
 }
