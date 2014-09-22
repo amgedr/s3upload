@@ -30,7 +30,7 @@ type Config struct {
 func getConfigs() Config {
 	usr, err := user.Current()
 	if err != nil {
-		logger.Fatalln(err.Error())
+		log.Fatalln(err.Error())
 	}
 
 	file := usr.HomeDir + string(os.PathSeparator) + ".s3upload.conf"

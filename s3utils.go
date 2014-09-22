@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/kr/s3/s3util" //Ref: http://godoc.org/github.com/kr/s3/s3util
 	"io"
 	"os"
@@ -29,25 +28,29 @@ func uploadFile(path string) {
 	if !cfg.Setup.Overwrite {
 		//if file exists do not upload again
 		if _, e := s3util.Open(fullPath, nil); e == nil {
-			fmt.Printf("%s...Already exists.\n", dest)
+			summary.Exists++
+			infoLog.Printf("%s...Already exists.\n", dest)
 			return
 		}
 	}
 
 	r, err := os.Open(path)
 	if err != nil {
-		logger.Printf("%s...%s", dest, err.Error())
+		summary.Fails++
+		errLog.Printf("%s...%s", dest, err.Error())
 		return
 	}
 	defer r.Close()
 
 	w, err := s3util.Create(fullPath, nil, nil)
 	if err != nil {
-		logger.Printf("%s...%s\n", dest, err.Error())
+		summary.Fails++
+		errLog.Printf("%s...%s\n", dest, err.Error())
 		return
 	}
 	defer w.Close()
 
 	io.Copy(w, r)
-	fmt.Printf("%s.....Done\n", dest)
+	summary.Success++
+	infoLog.Printf("%s.....Done\n", dest)
 }
