@@ -63,6 +63,7 @@ SecretKey="your_amazon_secretkey"  # Get from Amazon
 [Setup]
 #Setting this option to true may incur additional cost
 overwrite=false
+log="/var/log/s3upload.log"
 
 [Locations]
 source=""       # local directory to upload
