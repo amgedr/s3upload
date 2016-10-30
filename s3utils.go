@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/kr/s3/s3util" //Ref: http://godoc.org/github.com/kr/s3/s3util
 	"io"
 	"os"
 	"strings"
+
+	"github.com/kr/s3/s3util" //Ref: http://godoc.org/github.com/kr/s3/s3util
 )
 
 func upload(path string, f os.FileInfo, err error) error {

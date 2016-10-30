@@ -1,12 +1,13 @@
 package main
 
 import (
-	"code.google.com/p/gcfg" //Ref: http://code.google.com/p/gcfg/
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
+
+	"code.google.com/p/gcfg" //Ref: http://code.google.com/p/gcfg/
 )
 
 type Config struct {

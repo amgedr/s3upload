@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/kr/s3/s3util" //Ref: http://godoc.org/github.com/kr/s3/s3util
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/kr/s3/s3util" //Ref: http://godoc.org/github.com/kr/s3/s3util
 )
 
 var (
